@@ -20,7 +20,7 @@ public class Seat {
     @Column(nullable = false)
     private int price;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private SeatType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
