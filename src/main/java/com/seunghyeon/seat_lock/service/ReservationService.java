@@ -27,4 +27,10 @@ public class ReservationService {
         return store.holdSeat(seatId,userId);
     }
 
+    public Boolean holdReleaseSeat(Long seatId,Long userId){
+        seatRepository.findById(seatId)
+                .orElseThrow(()->new SeatNotFoundException("좌석을 찾을 수 없습니다."));
+        return store.releaseHold(seatId,userId);
+    }
+
 }
