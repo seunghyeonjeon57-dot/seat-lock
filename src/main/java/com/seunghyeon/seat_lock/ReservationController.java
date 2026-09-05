@@ -11,11 +11,11 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/reservaiton")
+@RequestMapping("/reservation")
 public class ReservationController {
     private final ReservationService service;
 
-    @GetMapping("/hold/{seatId}")
+    @PostMapping("/hold/{seatId}")
     public ResponseEntity<?> holdSeat(
             @PathVariable Long seatId,
             @RequestBody HoldRequest request
@@ -30,7 +30,7 @@ public class ReservationController {
 
 
     }
-    @PostMapping("/api/seats/{seatId}/release")
+    @PostMapping("/release/{seatId}")
     public ResponseEntity<?> releaseHold(@PathVariable Long seatId, @RequestBody HoldRequest request) {
         boolean success = service.holdReleaseSeat(seatId, request.userId());
 
