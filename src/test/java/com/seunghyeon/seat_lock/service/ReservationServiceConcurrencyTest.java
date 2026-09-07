@@ -1,17 +1,25 @@
 package com.seunghyeon.seat_lock.service;
 
+import com.seunghyeon.seat_lock.entity.Event;
+import com.seunghyeon.seat_lock.entity.Seat;
+import com.seunghyeon.seat_lock.entity.SeatType;
+import com.seunghyeon.seat_lock.repository.EventRepository;
+import com.seunghyeon.seat_lock.repository.SeatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class ReservationServiceConcurrencyTest {
@@ -22,12 +30,20 @@ class ReservationServiceConcurrencyTest {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    @Autowired
+    private SeatRepository seatRepository;
+
     private static final Long SEAT_ID = 1L;
+
+
+    @Autowired
+    private EventRepository eventRepository;
+
 
     @BeforeEach
     void cleanUp() {
-        // 이전 테스트 실행에서 남은 홀드가 있으면 지워서, 매번 같은 조건에서 시작하게 함
         redisTemplate.delete("seat:hold:" + SEAT_ID);
+
     }
 
     @Test
@@ -60,5 +76,31 @@ class ReservationServiceConcurrencyTest {
         executorService.shutdown();
 
         assertEquals(1, successCount.get());
+    }
+
+    @Test
+    @Transactional
+    void  좌석1을_홀드해도_좌석2에_영향이_없다(){
+        Long userId = 1L;
+        Long userId2 = 2L;
+        Event event = Event.builder().name("테스트 콘서트").startedAt(Instant.now()).build();
+        eventRepository.save(event);
+        Seat seat1 = Seat.builder().event(event).seatNumber("1").price(5000).type(SeatType.GOLD).build();
+        seatRepository.save(seat1);
+        Seat seat2 = Seat.builder().event(event).seatNumber("2").price(5000).type(SeatType.GOLD).build();
+        seatRepository.save(seat2);
+        Boolean result1= reservationService.holdSeat(seat1.getId(),userId);
+        Boolean result2 =reservationService.holdSeat(seat2.getId(),userId2);
+        assertTrue(result1);
+
+        assertTrue(result2);
+
+        assertEquals("1",redisTemplate.opsForValue().get("seat:hold:" + seat1.getId()));
+
+        assertEquals("2",redisTemplate.opsForValue().get("seat:hold:" + seat2.getId()));
+
+
+
+
     }
 }

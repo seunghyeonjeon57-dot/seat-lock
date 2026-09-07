@@ -1,7 +1,5 @@
 package com.seunghyeon.seat_lock.service;
 
-import com.seunghyeon.seat_lock.entity.Reservation;
-import com.seunghyeon.seat_lock.entity.Seat;
 import com.seunghyeon.seat_lock.exception.SeatNotFoundException;
 import com.seunghyeon.seat_lock.repository.EventRepository;
 import com.seunghyeon.seat_lock.repository.ReservationRepository;

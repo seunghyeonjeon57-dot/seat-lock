@@ -16,6 +16,7 @@ public class RedisHoldStore {
 
     public boolean holdSeat(Long seatId,Long userId){
         String key = "seat:hold:" + seatId;
+
         String value = userId.toString();
         Boolean result = template.opsForValue().setIfAbsent(key,value, Duration.ofMinutes(5));
         return Boolean.TRUE.equals(result);
