@@ -3,6 +3,7 @@ package com.seunghyeon.seat_lock.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.apachecommons.CommonsLog;
 
 import java.time.Instant;
 
@@ -12,6 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
+
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +24,7 @@ public class Event {
 
     @Column(nullable = false)
     private Instant startedAt;
+
+    @Column(nullable = false , unique = true)
+    private  String kopisId;
 }
