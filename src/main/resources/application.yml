@@ -12,3 +12,5 @@ spring:
     redis:
       host: localhost
       port: 6379
+kopis:
+  service-key: ${KOPIS_SERVICE_KEY}
